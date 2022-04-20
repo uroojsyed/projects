@@ -1,0 +1,227 @@
+---
+title: 'CIND 123 - Data Analytics: Basic Methods'
+author: 
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+<center> <h1> Assignment 2 (10%) </h1> </center>
+<center> <h3> Urooj Syed </h3> </center>
+<center> <h3> CIND123 DK0 Student Number:500778806 </h3> </center>
+---
+
+## Instructions 
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. Review this website for more details on using R Markdown <http://rmarkdown.rstudio.com>.
+
+Use RStudio for this assignment. Complete the assignment by inserting your R code wherever you see the string "#INSERT YOUR ANSWER HERE".
+
+When you click the **Knit** button, a document (PDF, Word, or HTML format) will be generated that includes both the assignment content as well as the output of any embedded R code chunks.
+
+Submit **both**  the rmd and generated output files. Failing to submit both files will be subject to mark deduction.
+
+## Sample Question and Solution
+
+Use `seq()` to create the vector [3,5, ... ,29).
+
+```{r}
+seq(3, 30, 2)
+seq(3, 29, 2)
+```
+
+
+
+
+## Question 1 (40 points)
+
+The Titanic Passenger Survival Data Set provides information on the fate of passengers on the fatal maiden voyage of the ocean liner "Titanic." The dataset is available from the Department of Biostatistics at the Vanderbilt University School of Medicine (https://biostat.app.vumc.org/wiki/pub/Main/DataSets/titanic3.csv)in several formats. store the Titanic Data Set `titanic_train` using the following commands. 
+
+
+```{r}
+#install.packages("titanic")
+library(titanic)
+titanicDataset <- read.csv(file = "https://biostat.app.vumc.org/wiki/pub/Main/DataSets/titanic3.csv", stringsAsFactors = F)
+summary(titanicDataset)
+```
+
+a) Extract and show the columns `sex`, `age`, `fare`, `cabin` and `survived` into a new data frame of the name 'titanicSubset'. (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+titanicSubset <- subset.data.frame(titanicDataset,select = c("sex", "age", "fare", "cabin", "survived"))
+```
+
+
+b) Numerical data: Use the count() function from the `dplyr` package to display the total number of passengers within each Ticket Class `Pclass`. (5 points) 
+```{r}
+#INSERT YOUR ANSWER HERE
+#install.packages("dplyr")
+library(dplyr)
+titanicDataset %>% count(pclass)
+```
+
+
+c) Categorical data: Use count() and group_by() functions from the `dplyr` package to calculate the number of passengers by `sex`. (5 points)
+HINT: use group_by() first then pipe the result to count() to calculate the number of passengers per sex.
+```{r}
+#INSERT YOUR ANSWER HERE
+titanicDataset %>% group_by(sex) %>% count()
+```
+
+
+d) Use the aggregate() function to calculate the 'survivalCount' of each `sex` and calculate the survival rate of each sex. Then draw the conclusion on which sex has the higher survival rate. (5 points) 
+```{r}
+#INSERT YOUR ANSWER HERE
+
+titanicSubset %>% group_by(sex) %>% summarise(survivors_by_sex=sum(survived))
+survivalCount <- aggregate(titanicSubset$survived, by = list(titanicSubset$sex),FUN = mean)
+survivalCount
+
+# The female group has a higher rate of survival.
+```
+
+
+e) Using boxplot to display the distribution of age for each sex and infer which group is older between male and female. (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+boxplot(titanicDataset$age ~ titanicDataset$sex)
+
+# The boxplot shows that the mean age of males is higher than females therefore the male group is older on average.
+```
+
+
+f) Calculate the average age for male and female and describe if the calculation agrees with the box plot. (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+m <- subset(titanicSubset,sex=="male")
+f <- subset(titanicSubset,sex=="female")
+avg_age_m <- mean(m$age, na.rm=TRUE)
+avg_age_m
+avg_age_f <- mean(f$age, na.rm=TRUE)
+avg_age_f
+
+# The average age for men is 30.6 and for female it is 28.6. Therefore, the average age is higher for male. This calculation agree with the boxplot.
+```
+
+
+g) Use the 'for' loop and 'if' control statements to list the women’s names, age 34 or more that embarked from S (Southampton), on the Titanic. (10 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+for (i in 1:(length(titanicDataset$sex))){
+  if (titanicDataset$age[i]>=34 && titanicDataset$sex[i]=='female' && titanicDataset$embarked=='S' 
+      && !is.na(titanicDataset$age[i])) {
+    print(titanicDataset$name[i])
+    }
+}
+```
+
+
+
+
+## Question 2 (15 points)
+
+In a shipment of 20 engines, history shows that the probability of any one engine proving unsatisfactory is 0.1
+
+a) What will be the probability that all 20 engines are satisfactory? (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+dbinom(x=20, size=20, prob=0.9)
+```
+
+
+b) Use the Binomial approximation to calculate the probability that more than 10 engines are defective? (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+1 - pbinom(10, size=20, prob=0.1)
+```
+
+
+c) Use the binomial approximation to calculate the probability that at most three engines are defective? (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+pbinom(3, size=20, prob=0.1)
+```
+
+
+
+
+## Question 3 (25 points)
+
+On average, John goes to his parents' place twice a week for visits. 
+
+a) What will be the probabilities if John decides not to visit at all and then does 1, 2, 3, 4 and 5 visits to his parents in the subsequent weeks?(5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+# Avg visits = 2
+dpois(0, lambda=2)
+dpois(1, lambda=2)
+dpois(2, lambda=2)
+dpois(3, lambda=2)
+dpois(4, lambda=2)
+dpois(5, lambda=2)
+```
+
+
+b) Find the probability that John goes to his parents' place 3 times or less in a week? (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+ppois(q=3, lambda=2)
+```
+
+
+c) Compare the similarity between Binomial and Poisson distribution. (15 points @ 5 point each)
+1) Create 100,000 samples for a Binomial random variable using parameters described in Question 2
+2) Create 100,000 samples for a Poisson random variable using parameters described in Question 3
+3) then illustrate on how well the Poisson probability distribution approximates the Binomial probability distribution.
+Please provide your result by visualizing through a comparative histogram.
+HINT: use multhist() from the 'plotrix' package. Please install if plotrix package is not in your R environment.
+```{r}
+#INSERT YOUR ANSWER HERE
+#install.packages("plotrix")
+library(plotrix)
+# Question 2 : size=20 prob=0.1 & Question 3 : prob=2
+x <- c(0:100000)
+sample1 <- rbinom(x, size=20, prob=0.1)
+sample2 <- ppois(x, 2)
+compare_dist <- list(sample1, sample2)
+multhist(compare_dist, beside=TRUE, plot.it=TRUE)
+
+```
+
+
+
+
+## Question 4 (20 points)
+
+Given the following conditions of a normal random variable having mean = 16 and variance = 9, please write the R codes to find the probabilities and their values when, 
+
+a) lies between 14.4 and 20.3 (inclusive) (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+pnorm(20.3, 16, sd=3) - pnorm(14.4, 16, sd=3)
+```
+
+
+b) is greater than 21.8 (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+1-pnorm(21.8, 16, sd=3)
+```
+
+
+c) is less than or equal to 10.5 (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+pnorm(10.5, 16, sd=3)
+```
+
+
+d) is less than 13 or greater than 19 (5 points)
+```{r}
+#INSERT YOUR ANSWER HERE
+pnorm(13, 16, sd=3) + 1-pnorm(19, 16, sd=3)
+```
+
+
+END of Assignment #2.
