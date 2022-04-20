@@ -1,0 +1,270 @@
+---
+title: "CIND 123: Data Analytics Basic Methods: Assignment-3_W2022"
+output: html_document
+---
+<center> <h1> Assignment 3 (10%) </h1> </center>
+<center> <h2> Total 100 Marks </h2> </center>
+<center> <h3> Urooj Syed </h3> </center>
+<center> <h3> CIND123 DK0 Student Number:500778806 </h3> </center>
+---
+
+
+## Instructions
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Use RStudio for this assignment. Complete the assignment by inserting your R code wherever you see the string "#INSERT YOUR ANSWER HERE".
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Submit **both**  the rmd and generated output files. Failing to submit both files will be subject to mark deduction.
+
+## Sample Question and Solution
+
+Use `seq()` to create the vector $(2,4,6,\ldots,20)$.
+
+```{r}
+#INSERT YOUR ANSWER HERE.
+seq(2,20,by = 2)
+
+```
+## Question 1 [15 Pts]
+
+a) [5 Pts] First and second midterm grades of some students are given as c(85,76,78,88,90,95,42,31) and c(55,76,48,58,80,75,32,22). Set R variables `first` and `second` respectively. Then find the least-squares line relating the second midterm to the first midterm. 
+
+   Does the assumption of a linear relationship appear to be reasonable in this case? Give reasons to your answer as a comment.
+```{r}
+#INSERT YOUR ANSWER HERE
+first <- c(85,76,78,88,90,95,42,31)
+second <- c(55,76,48,58,80,75,32,22)
+
+relation_model <- lm(second ~ first)
+summary(relation_model)
+```
+
+
+```{r}
+# The relation appears to be linear in this case as the median is close to 0 and the coefficient of determination R-squared is close to +1.
+```
+
+b) [5 Pts] Plot the second midterm as a function of the first midterm using a scatterplot and graph the least-square line on the same plot. 
+```{r}
+#INSERT YOUR ANSWER HERE
+
+# Using the intercept and slope of the linear model
+plot(first, second, pch=1,
+xlab="first midterm",
+ylab="second midterm",
+main="scores of second midterm vs. first midterm")
+abline(-1.1669, 0.7784, col="red")
+```
+
+c) [5 Pts] Use the regression line to predict the second midterm grade when the first midterm grade is 88. 
+```{r}
+#INSERT YOUR ANSWER HERE
+
+# Using the coefficients from the linear model
+predict_grade <- -1.1669 + 0.7784  * 88
+predict_grade
+```
+
+
+
+## Question 2 [45 Pts]
+
+This question makes use of package "plm". Please load Crime dataset as follows:
+```{r load_packages}
+# or install.packages("plm")
+library(plm) 
+data(Crime)
+```
+
+a) [5 Pts] Display the first 10 rows of 'crime' data and display the names of all the variables, then display a descriptive summary of each variable. 
+```{r}
+#INSERT YOUR ANSWER HERE
+head(Crime, n=10)
+```
+```{r}
+names(Crime)
+```
+
+
+```{r}
+summary(Crime)
+```
+
+
+b) [5 Pts] Calculate the mean,variance and standard deviation of tax revenue per capita (taxpc) by omitting the missing values, if any. 
+```{r}
+#INSERT YOUR ANSWER HERE
+mean(na.omit(Crime$taxpc))
+```
+
+
+```{r}
+var(na.omit(Crime$taxpc))
+```
+
+
+```{r}
+sd(na.omit(Crime$taxpc))
+```
+
+c) [5 Pts] Use `density` and `smsa` variables to build a linear regression model to predict tax per capita (taxpc).  
+
+   [5 Pts] How can you draw a conclusion from the result? 
+```{r}
+#INSERT YOUR ANSWER HERE
+per_capita_model <- lm(Crime$taxpc ~ Crime$density + Crime$smsa, data = Crime)
+summary(per_capita_model)
+```
+
+
+```{r}
+# The coefficient of determination R-squared is closer to 0 at 0.06 or 6% which means that density and smsa have a weak positive correlation with taxpc. The intercept is equal to 29.5 and the coefficients for 'density' is -0.2345 and 11.2808 when the value of 'smsa' is 'yes'. Therefore, as density of people per square mile goes up, the tax revenue per capita goes down. 
+```
+
+d) [5 Pts] Based on the output of your model, write the equations using the intercept and factors of `smsa` when `density` is set to 2.4. and compare the result with `predict()` function.  
+Hint: Explore `predict()` function
+```{r}
+#INSERT YOUR ANSWER HERE
+
+# Using the coefficients from the linear model
+predict_no <- 29.5615 + -0.2345*(2.4)
+predict_no
+```
+
+
+```{r}
+predict_yes <- 29.5615 + -0.2345*(2.4) + 11.2808
+predict_yes
+```
+
+```{r}
+predict_smsa_df <- data.frame(Crime$density, Crime$smsa)
+predict_smsa <- predict(per_capita_model, predict_smsa_df)
+mean(predict_smsa[Crime$smsa == 'no'])
+```
+```{r}
+mean(predict_smsa[Crime$smsa == 'yes'])
+```
+
+
+```{r}
+# The results are very similar with a difference of ~+/-1
+```
+
+e) [5 Pts] Find Pearson correlation between `density` and tax per capita `taxpc`; between density and police per capita `polpc`. 
+
+   [5 Pts] What conclusions can you draw? Write your reasons as comments.
+```{r}
+#INSERT YOUR ANSWER HERE
+cor(Crime$density, Crime$taxpc, method = "pearson")
+```
+```{r}
+cor(Crime$density, Crime$polpc, method = "pearson")
+```
+
+
+```{r}
+# The correlation coefficient is positive for 'density' and 'taxpc' meaning that there is a positive relationship between the two variables. However, it is only 19% so the correlation is weak. The correlation coefficient is negative for 'density' and 'polpc' so there is a negative linear correlation between these two variables. This shows us that the number of police officers per person will decrease as the density of people per capita increases.
+```
+
+f) [5 Pts] Display the correlation matrix of the variables: avgsen, polpc, density, taxpc. 
+
+   [5 Pts]  Write what conclusion you can draw, as comments.
+```{r}
+#INSERT YOUR ANSWER HERE
+cor(Crime[c("avgsen", "polpc", "density", "taxpc")])
+```
+
+
+```{r}
+# Most of the variables have a positive correlation with each other. The only negative correlation is 'polpc' and 'density'. As stated above, it makes sense to be a negative correlation here because as density increases, the number of police officers will be less in relation.
+```
+
+
+
+## Question 3 [15 Pts]
+
+This question makes use of package "ISwR". Please load `airquality` dataset as following:
+
+```{r}
+# or install.packages("ISwR")
+library(ISwR) 
+data(airquality)
+str(airquality)
+```
+
+
+a) [5 Pts] Use a histogram to assess the normality of the `Ozone` variable, then explain why it does not appear normally distributed. 
+```{r}
+#attach(airquality)
+
+#INSERT YOUR ANSWER HERE
+summary(airquality)
+hist(airquality$Ozone)
+```
+
+
+```{r}
+# We can see that the histogram has a positive skew (right-skewed). It does not have a symmetrical distribution because according to the summary of the data, the mean is 42.13 which is greater than the median 31.50.
+```
+
+b) [5 Pts] Create a boxplot that shows the distribution of `Ozone` in each month. Use different colors for each month. 
+
+```{r}
+#INSERT YOUR ANSWER HERE
+boxplot(Ozone ~ Month, data = airquality, main = "distribution of ozone per month", 
+xlab="number of month", 
+ylab="ozone", col = c('pink', 'blue', 'purple', 'yellow', 'green'))
+
+```
+c) [5 Pts] Create a matrix of scatterplots of all the numeric variables in the `airquality` dataset (i.e. Ozone, Solar.R, Wind and Temp.)
+(Hint: investigate pairs() function) 
+
+```{r}
+#INSERT YOUR ANSWER HERE
+vars <- c("Ozone", "Solar.R", "Wind", "Temp")
+pairs(airquality[vars])
+```
+## Question 4 [25 Pts]
+
+$\pi$ appears in the formula for the standard normal distribution, the most important probability distribution in statistics. Why not give it a try to calculate $\pi$ using statistics! In fact, you'll use a simulation technique called the *Monte Carlo Method*.
+
+Recall that the area of a circle of radius $r$ is $A = \pi r^2$. Therefore the area of a circle of radius 1, aka a *unit circle*, is $\pi$. You'll compute an approximation to the area of this circle using the Monte Carlo Method.
+
+a) [5 Pts] The Monte Carlo Method uses random numbers to simulate some process. Here the process is throwing darts at a square. Assume the darts are uniformly distributed over the square. Imagine a unit circle enclosed by a square whose sides are of length 2. Set an R variable `area.square` to be the area of a square whose sides are of length 2. 
+```{r}
+#INSERT YOUR ANSWER HERE
+area.square = 2^2
+```
+
+b) [5 Pts] The points of the square can be given x-y coordinates. Let both x and y range from -1 to +1 so that the square is centred on the origin of the coordinate system. Throw some darts at the square by generating random numeric vectors x and y, each of length `N = 10,000`. Set R variables `x` and `y` each to be uniformly distributed random numbers in the range -1 to +1. 
+(hint: runif() generates random number for the uniform distribution) 
+```{r}
+#INSERT YOUR ANSWER HERE
+x <- runif(10000, -1)
+y <- runif(10000, -1)
+```
+
+c) [10 Pts] Now count how many darts landed inside the unit circle. Recall that a point is inside the unit circle when $x^2 + y^2 < 1$. Save the result of successful hits in a variable named hit. 
+(hint: a for loop over the length of x and y is one option to reach hit) 
+```{r}
+#INSERT YOUR ANSWER HERE
+hits <- function(x)
+{
+  for (i in 1:length(x)) {
+    if (x[i]^2 + y[i]^2 < 1) hits = hits + 1 }
+}
+```
+
+d) [5 Pts] The probability that a dart hits inside the circle is proportional to the ratio of the area of the circle to the area of the square. Use this fact to calculate an approximation to $\pi$ and print the result. 
+```{r}
+#INSERT YOUR ANSWER HERE
+```
+Wow you got the first estimate for `pi` $\pi$ at least accurate to first decimal place by this simple logic! Congratulations! you have completed the first run of the Monte Carlo simulation. 
+
+If there is further interest, put all the above logic in a function, and call it 50 times at least, and store the results in a vector called pi then take the mean of pi vector to be more accurate. 
+
+*** End of Assignment ***
