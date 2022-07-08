@@ -1,11 +1,8 @@
 ---
-title: "CIND 123: Data Analytics Basic Methods: Assignment-3_W2022"
+title: "Data Analytics Basic Methods: Assignment-3_W2022"
 output: html_document
 ---
-<center> <h1> Assignment 3 (10%) </h1> </center>
-<center> <h2> Total 100 Marks </h2> </center>
 <center> <h3> Urooj Syed </h3> </center>
-<center> <h3> CIND123 DK0 Student Number:500778806 </h3> </center>
 ---
 
 
