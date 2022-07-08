@@ -8,7 +8,6 @@ output:
 ---
 <center> <h1> Assignment 2 (10%) </h1> </center>
 <center> <h3> Urooj Syed </h3> </center>
-<center> <h3> CIND123 DK0 Student Number:500778806 </h3> </center>
 ---
 
 ## Instructions 
