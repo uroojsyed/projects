@@ -1,12 +1,11 @@
 ---
-title: 'CIND 123 - Data Analytics: Basic Methods'
+title: 'Data Analytics: Basic Methods'
 author: 
 output:
   html_document: default
   word_document: default
   pdf_document: default
 ---
-<center> <h1> Assignment 2 (10%) </h1> </center>
 <center> <h3> Urooj Syed </h3> </center>
 ---
 
